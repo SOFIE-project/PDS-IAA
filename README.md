@@ -13,63 +13,62 @@ clients. A client authenticates her/him self in the authorization server and obt
 uses this token to access the protected resource.
 
 # Installation
+For simplicity reasons we will use the docker images of the SOFIE's components, as well as the included configuration.
+**Warning**
+> The provided configuration also includes a public/private key pair used for JTW singing/verification. In a real deployment you must use
+> your own keys.
+
+
 ## Authorization Server
-As an authorization server we will use SOFIE's PDS component. 
+As an authorization server we will use SOFIE's PDS component. Initially clone the components repository by using:
+
+* git clone https://github.com/SOFIE-project/Privacy-and-Data-Sovereignty.git
+
+Then build the PDS docker image by executing the `docker-build.sh` script
 
 
 ## Resource server
-As an authorization we will use SOFIE's IAA component. 
+As a resource server we will use SOFIE's IAA component. Therefore, in this tutorial we will not access a real resource, instead we will 
+receive a message that the client is authorized to access a resource. Clone IAA repository by using
 
-# Authorization Server configuration
-The authorization server needs to configure with the identifiers of the authorized clients. This can be done either manually, or by using PDS administrative interface
+* git clone https://github.com/SOFIE-project/identity-authentication-authorization.git
+
+Then build the IAA docker image by executing the `docker-build.sh` script
+
+## Client scripts
+In order to execute the provided client scripts you will need python3, Hyperledger Indy SDK, and SDK's python3 wrapper. You can install Indy 
+SDK and the python3 wrapper by executing the following (assuming you are using Ubuntu 18.04):
+
+* sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CE7709D068DB5E88
+* sudo add-apt-repository "deb https://repo.sovrin.org/sdk/deb bionic stable"
+* sudo apt-get update
+* sudo apt-get install -y libindy
+* pip3 install python3-indy
+
+For other operating systems follow (these instructions)[https://github.com/hyperledger/indy-sdk#installing-the-sdk]
+
+# Execution
+Run the PDS and IAA components using the following commands:
+
+* docker run -tid --rm -p 9001-9002:9001-9002 pds
+* docker run -tid --rm -p 9000:9000 iaa
+
+## Authorization Server configuration
+The authorization server needs to be configured with the identifiers of the authorized clients. This can be done either manually, or by using PDS administrative interface.
+First, run the client-setup script (`python3 client-setup.py`). This script will create an Indy wallet, a DID, and a verification key. ** Note the output DID and verification key**.
+
+### Configuration using PDS administrative interface
+Edit the `owner.py` script by editing the `client_id` and `client_ver_key` variables with the values output by the client-setup.py script. 
+Then, run `python3 owner.py` This script configures the PDS component with the client's DID, specifying the period for which the client is authorized,
+as well as for which domain. 
 
 ## Local configuration
-## PDS administrative interface
-```python
-user = {
-    'wallet_config': json.dumps({'id': 'user_wallet',"storage_config":{"path":"tests/indy_wallets"}}),
-    'wallet_credentials': json.dumps({'key': 'user_wallet_key'}),
-    'did' : '4qk3Ab43ufPQVif4GAzLUW'
-}
-wallet_handle = await wallet.open_wallet(user['wallet_config'], user['wallet_credentials'])
-verkey = await did.key_for_local_did(wallet_handle, user['did'])
-nbf = time.mktime(datetime.datetime(2020, 4, 1, 00, 00).timetuple())
-exp = time.mktime(datetime.datetime(2020, 4, 1, 23, 59).timetuple()) 
-payload = {'action':'add','did':user['did'], 'verkey': verkey, 'metadata':json.dumps({'aud': 'sofie-iot.eu','nbf':nbf, 'exp': exp})}
-response  = requests.post("http://localhost:9002/", data = payload).text
-response =json.loads(response)
-assert(response['code'] == 200)
-payload = {'action':'get', 'did':user['did']}
-response  = requests.post("http://localhost:9002/", data = payload).text
-response =json.loads(response)
-assert(response['code'] == 200)
-await wallet.close_wallet(wallet_handle)
-```
+TBP
 
-# Client authentication and authorization
+# Client authentication and authorization, and resource access
+Make sure you have executed the previous step and you have configured the authorization server. 
+Edit the `client.py` script by editing the `client_id`  variable with the value output by the client-setup.py script.
 
-```python
-user = {
-    'wallet_config': json.dumps({'id': 'user_wallet',"storage_config":{"path":"tests/indy_wallets"}}),
-    'wallet_credentials': json.dumps({'key': 'user_wallet_key'}),
-    'did' : '4qk3Ab43ufPQVif4GAzLUW'
-}
-payload = {'grant-type':'DID', 'grant':user['did'], 'target':'smartlocker1'}
-response  = requests.post("http://localhost:9001/gettoken", data = payload).text
-response =json.loads(response)
-assert(response['code'] == 401)
-challenge = response['challenge']
-wallet_handle = await wallet.open_wallet(user['wallet_config'], user['wallet_credentials'])
-verkey = await did.key_for_local_did(wallet_handle, user['did'])
-signature = await crypto.crypto_sign(wallet_handle, verkey, challenge.encode())
-signature64 = base64.b64encode(signature)
-exp = time.mktime(datetime.datetime(2020, 4, 1, 23, 59).timetuple())
-payload = {'grant-type':'DID', 'grant':user['did'], 'challenge': challenge, 'proof':signature64, 'target':'smartlocker1', 'expires':exp, 'subject': user['did']}
-response  = requests.post("http://localhost:9001/gettoken", data = payload).text
-response =json.loads(response)
-assert(response['code'] == 200)
-await wallet.close_wallet(wallet_handle)
-```
 
 # Resource access 
 ```python
