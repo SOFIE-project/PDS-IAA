@@ -46,7 +46,7 @@ SDK and the python3 wrapper by executing the following (assuming you are using U
 * sudo apt-get install -y libindy
 * pip3 install python3-indy
 
-For other operating systems follow (these instructions)[https://github.com/hyperledger/indy-sdk#installing-the-sdk]
+For other operating systems follow [these instructions](https://github.com/hyperledger/indy-sdk#installing-the-sdk)
 
 # Execution
 Run the PDS and IAA components using the following commands:
@@ -68,7 +68,7 @@ as well as for which domain.
 ## Local configuration
 TBP
 
-# Client authentication and authorization, and resource access
+# Client authentication, authorization, and resource access
 Make sure you have executed the previous step and you have configured the authorization server. 
 Edit the `client.py` script by editing the `client_id`  variable with the value output by the client-setup.py script.
 
