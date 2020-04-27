@@ -14,6 +14,7 @@ uses this token to access the protected resource.
 
 # Installation
 For simplicity reasons we will use the docker images of the SOFIE's components, as well as the included configuration.
+
 **Warning**
 > The provided configuration also includes a public/private key pair used for JTW singing/verification. In a real deployment you must use
 > your own keys.
@@ -55,7 +56,9 @@ Run the PDS and IAA components using the following commands:
 
 ## Authorization Server configuration
 The authorization server needs to be configured with the identifiers of the authorized clients. This can be done either manually, or by using PDS administrative interface.
-First, run the client-setup script (`python3 client-setup.py`). This script will create an Indy wallet, a DID, and a verification key. ** Note the output DID and verification key**.
+First, run the client-setup script (`python3 client-setup.py`). This script will create an Indy wallet, a DID, and a verification key. 
+
+**Note down the output DID and verification key**.
 
 ### Configuration using PDS administrative interface
 Edit the `owner.py` script by editing the `client_id` and `client_ver_key` variables with the values output by the client-setup.py script. 
