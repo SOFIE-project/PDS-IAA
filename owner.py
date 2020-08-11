@@ -6,8 +6,8 @@ import json
 '''
 Edit the following variables using the output of the client-setup script
 '''
-client_did    = '7FJs8MXbdTTmWx3HNyfMRN'
-client_verkey = '4QUGgBZDpnHXHa1gJ3rTNhQcCwC94DjFt5iSwgQ3dbVm'
+client_did    = '4GZWGKysoekTUN8UJxdoqU'
+client_verkey = '2nKNxt27d2TpmHR3fWqsc2ebKjTYfXauJzMiFC8fAGud'
 
 '''
 The following fields will be used when constructing the JWT for that client

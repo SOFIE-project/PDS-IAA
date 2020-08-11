@@ -52,7 +52,9 @@ For other operating systems follow [these instructions](https://github.com/hyper
 Run the PDS and IAA components using the following commands:
 
 * docker run -tid --rm -p 9001-9002:9001-9002 pds
-* docker run -tid --rm -p 9000:9000 iaa
+* docker run -tid --rm -p 9000:9000 --network="host"  iaa
+
+(note that --network="host" is used because the resource server runs in localhost, otherwise it is not needed)
 
 ## Authorization Server configuration
 The authorization server needs to be configured with the identifiers of the authorized clients. This can be done either manually, or by using PDS administrative interface.
