@@ -11,6 +11,9 @@ consider (and provide) an "owner" component which is used for configuring PDS, a
 as a "resource" component which is protected by IAA. The following example vary 
 depending on the type of authorization grants and of access tokens. 
 
+![Figure1](figures/figure1.png)
+Figure 1: The examples' setup
+
 # Installation
 For simplicity reasons we will use the docker images of the SOFIE's components, as well as the included configuration.
 
