@@ -11,10 +11,11 @@ A client that uses:
  JWT as a token
 '''
 
-'''
-Edit the following variables using the output of the client-setup script
-'''
-client_did    = '4GZWGKysoekTUN8UJxdoqU'
+with open('./did-jwt-example.conf') as f:
+    conf = json.load(f)
+
+client_did    = conf['client_did'] 
+client_verkey = conf['client_verkey']
 
 client = {
     'wallet_config': json.dumps({'id': 'client_wallet', "storage_config":{"path":"."}}),
@@ -22,7 +23,7 @@ client = {
 }
 
 async def run():
-    print("Commuunicating with PDS...")
+    print("Communicating with PDS...")
     wallet_handle = await wallet.open_wallet(client['wallet_config'], client['wallet_credentials']) 
     payload       = {'grant-type':'DID', 'grant':client_did}
     response      = requests.post("http://localhost:9001/gettoken", data = payload).text

@@ -3,12 +3,14 @@ import datetime
 import time
 import json
 
-'''
-Edit the following variables using the output of the client-setup script
-'''
-client_did    = '4GZWGKysoekTUN8UJxdoqU'
-client_verkey = '2nKNxt27d2TpmHR3fWqsc2ebKjTYfXauJzMiFC8fAGud'
+with open('./did-jwt-example.conf') as f:
+    conf = json.load(f)
 
+client_did    = conf['client_did'] 
+client_verkey = conf['client_verkey']
+
+print (client_did)
+print (client_verkey)
 '''
 The following fields will be used when constructing the JWT for that client
 '''
