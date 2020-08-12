@@ -20,6 +20,12 @@ async def setup():
     print("DID: " + client_did)
     print("Verification key: " + client_verkey)
     await wallet.close_wallet(wallet_handle)
+    print("Creating configuration file for the example")
+    conf = {}
+    conf['client_did']    = client_did
+    conf['client_verkey'] = client_verkey
+    with open('did-jwt-example.conf', 'w') as f:
+        json.dump(conf,f)
 
 def main():
     loop = asyncio.get_event_loop()

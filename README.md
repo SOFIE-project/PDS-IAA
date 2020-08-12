@@ -1,16 +1,18 @@
 # PDS-IAA
-This tutorial will guide you through the process of installing, configuring, and using SOFIE's PDS and IAA components.
+This repository includes examples of using SOFIE's
+[PDS](https://github.com/SOFIE-project/Privacy-and-Data-Sovereignty) and [IAA](https://github.com/SOFIE-project/identity-authentication-authorization) components. 
 
-# Scenario
-In this tutorial we consider the following set-up
-* A resource server that hosts a resource protected using IAA
-* A client wishing to access the resource
-* A resource owner acting as the administrator
-* An authorization server that generates access tokens.
+# Examples setup
+Figure 1 shows the setup of our examples. PDS acts as an OAuth2.0 authorization server
+that accepts as input an authorization grant, and outputs access tokens. IAA acts
+as a forward proxy, it receives HTTP requests that include the access token, and if
+the token is valid it forwards the request to appropriate endpoint. Additionally, we
+consider (and provide) an "owner" component which is used for configuring PDS, as well
+as a "resource" component which is protected by IAA. The following example vary 
+depending on the type of authorization grants and of access tokens. 
 
-These entities interact as follows. The resource owner configures the resource server with the DIDs of the authorized
-clients. A client authenticates her/him self in the authorization server and obtains a JSON web token (JWT). Then she/he
-uses this token to access the protected resource.
+![Figure1](figures/figure1.png)
+Figure 1: The examples' setup
 
 # Installation
 For simplicity reasons we will use the docker images of the SOFIE's components, as well as the included configuration.
@@ -20,24 +22,23 @@ For simplicity reasons we will use the docker images of the SOFIE's components, 
 > your own keys.
 
 
-## Authorization Server
-As an authorization server we will use SOFIE's PDS component. Initially clone the components repository by using:
+## PDS
+Initially clone the components repository by using:
 
 * git clone https://github.com/SOFIE-project/Privacy-and-Data-Sovereignty.git
 
 Then build the PDS docker image by executing the `docker-build.sh` script
 
 
-## Resource server
-As a resource server we will use SOFIE's IAA component. Therefore, in this tutorial we will not access a real resource, instead we will 
-receive a message that the client is authorized to access a resource. Clone IAA repository by using
+## IAA
+Clone IAA repository by using
 
 * git clone https://github.com/SOFIE-project/identity-authentication-authorization.git
 
 Then build the IAA docker image by executing the `docker-build.sh` script
 
-## Client scripts
-In order to execute the provided client scripts you will need python3, Hyperledger Indy SDK, and SDK's python3 wrapper. You can install Indy 
+## Client, Owner, Server, and Setup script
+In order to execute the auxilliary scripts you will need python3, Hyperledger Indy SDK, and SDK's python3 wrapper. You can install Indy 
 SDK and the python3 wrapper by executing the following (assuming you are using Ubuntu 18.04):
 
 * sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CE7709D068DB5E88
@@ -48,27 +49,39 @@ SDK and the python3 wrapper by executing the following (assuming you are using U
 
 For other operating systems follow [these instructions](https://github.com/hyperledger/indy-sdk#installing-the-sdk)
 
-# Execution
+# Example 1: Hyperldger DID authorization grant and JWT access token
+This example is located in the folder DID-jwt
+
+## Preparation
+Run the setup script
+
+* python3 setup.py
+
+The script created a Hyperledger Indy wallet for the client, it generates a DID and a verification key,
+and records the latter information in a configuration file (names did-jwt-example.conf). This configuration 
+is later used by the "owner" script in order to configure PDS.
+
+## Execution
+
 Run the PDS and IAA components using the following commands:
 
 * docker run -tid --rm -p 9001-9002:9001-9002 pds
-* docker run -tid --rm -p 9000:9000 iaa
+* docker run -tid --rm -p 9000:9000 --network="host"  iaa
 
-## Authorization Server configuration
-The authorization server needs to be configured with the identifiers of the authorized clients. This can be done either manually, or by using PDS administrative interface.
-First, run the client-setup script (`python3 client-setup.py`). This script will create an Indy wallet, a DID, and a verification key. 
+(note that --network="host" is used because the resource server runs in localhost, otherwise it is not needed)
 
-**Note down the output DID and verification key**.
+Run the resource server
 
-### Configuration using PDS administrative interface
-Edit the `owner.py` script by editing the `client_id` and `client_ver_key` variables with the values output by the client-setup.py script. 
-Then, run `python3 owner.py` This script configures the PDS component with the client's DID, specifying the period for which the client is authorized,
-as well as for which domain. 
+* python3 server.py
 
-## Local configuration
-TBP
+Run the owner script in order to configure PDS, with the client's DID, specifying the period for which the client is authorized, as well as for which domain
 
-# Client authentication, authorization, and resource access
-Make sure you have executed the previous step and you have configured the authorization server. 
-Edit the `client.py` script by editing the `client_id`  variable with the value output by the client-setup.py script.
+* python3 owner.py
+
+Finally run the client script. The client script interacts with PDS, it receives an access token, and then 
+interacts with the resource server through IAA.
+
+* python3 client.py
+
+
 

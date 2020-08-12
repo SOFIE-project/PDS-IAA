@@ -6,9 +6,16 @@ import requests
 import base64
 
 '''
-Edit the following variables using the output of the client-setup script
+A client that uses:
+ DID as authorization grant
+ JWT as a token
 '''
-client_did    = '7FJs8MXbdTTmWx3HNyfMRN'
+
+with open('./did-jwt-example.conf') as f:
+    conf = json.load(f)
+
+client_did    = conf['client_did'] 
+client_verkey = conf['client_verkey']
 
 client = {
     'wallet_config': json.dumps({'id': 'client_wallet', "storage_config":{"path":"."}}),
@@ -16,7 +23,7 @@ client = {
 }
 
 async def run():
-    print("Client authentication and authorization...")
+    print("Communicating with PDS...")
     wallet_handle = await wallet.open_wallet(client['wallet_config'], client['wallet_credentials']) 
     payload       = {'grant-type':'DID', 'grant':client_did}
     response      = requests.post("http://localhost:9001/gettoken", data = payload).text
@@ -34,9 +41,8 @@ async def run():
     print("...Received JWT")
     print(jwt)
     print("Client resource access...")
-    payload       = {'token-type':'Bearer', 'token':jwt}
-    response      = requests.post("http://localhost:9000/verifytoken", data = payload).text
-    response      = json.loads(response)
+    headers = {'Authorization':'Bearer ' + jwt, 'Accept': 'application/json'}
+    response  = requests.get("http://localhost:9000/secure/jwt", headers = headers).text
     print(response)
 
 
