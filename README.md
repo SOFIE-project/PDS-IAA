@@ -37,6 +37,10 @@ Clone IAA repository by using
 
 Then build the IAA docker image by executing the `docker-build.sh` script
 
+
+# Example 1: Hyperldger DID authorization grant and JWT access token
+This example is located in the folder DID-jwt
+
 ## Client, Owner, Server, and Setup script
 In order to execute the auxilliary scripts you will need python3, Hyperledger Indy SDK, and SDK's python3 wrapper. You can install Indy 
 SDK and the python3 wrapper by executing the following (assuming you are using Ubuntu 18.04):
@@ -48,9 +52,6 @@ SDK and the python3 wrapper by executing the following (assuming you are using U
 * pip3 install python3-indy
 
 For other operating systems follow [these instructions](https://github.com/hyperledger/indy-sdk#installing-the-sdk)
-
-# Example 1: Hyperldger DID authorization grant and JWT access token
-This example is located in the folder DID-jwt
 
 ## Preparation
 Run the setup script
@@ -79,6 +80,28 @@ Run the owner script in order to configure PDS, with the client's DID, specifyin
 * python3 owner.py
 
 Finally run the client script. The client script interacts with PDS, it receives an access token, and then 
+interacts with the resource server through IAA.
+
+* python3 client.py
+
+# Example 2: Accessing a resource using W3C VC as an access token
+This example is located in the folder none-W3C-VC
+
+
+## Execution
+
+Run the IAA component using the following command:
+
+* docker run -tid --rm -p 9000:9000 --network="host"  iaa
+
+(note that --network="host" is used because the resource server runs in localhost, otherwise it is not needed)
+
+Run the resource server
+
+* python3 server.py
+
+
+Finally run the client script. The client script
 interacts with the resource server through IAA.
 
 * python3 client.py
