@@ -159,7 +159,7 @@ sudo snap install solc
 npm install -g ganache-cli
 ```
 
-Enter the `ganache` directory, locates in the roor folder of this repository, and execute the following commands
+Enter the `ganache` directory, located in the root folder of this repository, and execute the following commands
 
 ```bash
 npm install sofie-pds sofie-erc721
